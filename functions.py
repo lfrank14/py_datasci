@@ -11,7 +11,8 @@ import spacy
 spnlp = TypeVar('spacy.lang.en.English')  #for type hints
 import os
 os.system("python -m spacy download en_core_web_md")
-
+import en_core_web_md
+nlp = en_core_web_md.load()
 
 ###################################
 ###  FUNCTIONS FOR NAIVE BAYES  ###
