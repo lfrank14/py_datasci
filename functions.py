@@ -33,6 +33,42 @@ def update_news_row(word_table, word:str, outcome:int):
     word_table.loc[len(word_table)] = row
   return word_table
 
+### Calculate naive bayes on test set ###
+def bayes_news(evidence:list, evidence_bag, training_table, laplace:float=1.0) -> tuple:
+  assert isinstance(evidence, list), f'evidence not a list but instead a {type(evidence)}'
+  assert all([isinstance(item, str) for item in evidence]), f'evidence must be list of strings (not spacy tokens)'
+  assert isinstance(evidence_bag, pd.core.frame.DataFrame), f'evidence_bag not a dataframe but instead a {type(evidence_bag)}'
+  assert isinstance(training_table, pd.core.frame.DataFrame), f'training_table not a dataframe but instead a {type(training_table)}'
+
+  label_list = training_table.isfake.to_list()
+  word_list = evidence_bag.index.values.tolist()
+
+  evidence = list(set(evidence))  #remove duplicates
+  counts = []
+  probs = []
+  for i in range(2):
+    ct = label_list.count(i)
+    counts.append(ct)
+    probs.append(ct/len(label_list))
+
+  #now have counts and probs for all classes
+
+  results = []
+  for a_class in range(2):
+    numerator = 1
+    for ei in evidence:
+      if ei not in word_list:
+        #did not see word in training set
+        the_value =  1/(counts[a_class] + len(evidence_bag))
+      else:
+        values = evidence_bag.loc[ei].tolist()
+        the_value = ((values[a_class]+laplace)/(counts[a_class] + laplace*len(evidence_bag)))
+      numerator *= the_value
+    #if (numerator * probs[a_class]) == 0: print(evidence)
+    results.append(max(numerator * probs[a_class], 2.2250738585072014e-308))
+
+  return tuple(results)
+
 ###########################
 ###  FUNCTIONS FOR ANN  ###
 ###########################
