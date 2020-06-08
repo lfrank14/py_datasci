@@ -18,8 +18,20 @@ nlp = en_core_web_md.load()
 ###  FUNCTIONS FOR NAIVE BAYES  ###
 ###################################
 
-
-
+### Update word bag ###
+def update_news_row(word_table, word:str, outcome:int):
+  assert isinstance(outcome, int), f'Expecting int in outcome but saw {type(outcome)}.'
+  value_list = [[1,0],[0,1]]
+  word_list = word_table['word'].tolist()
+  real_word = word if type(word) == str else word.text
+  
+  if real_word in word_list:
+    j = word_list.index(real_word)
+    word_table.loc[j, outcome] += 1
+  else:
+    row = [real_word] + value_list[outcome]
+    word_table.loc[len(word_table)] = row
+  return word_table
 
 ###########################
 ###  FUNCTIONS FOR ANN  ###
