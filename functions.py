@@ -14,7 +14,6 @@ os.system("python -m spacy download en_core_web_md")
 import en_core_web_md
 nlp = en_core_web_md.load()
 
-from scipy.stats import laplace
 
 ###################################
 ###  FUNCTIONS FOR NAIVE BAYES  ###
